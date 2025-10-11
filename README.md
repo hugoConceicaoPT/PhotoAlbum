@@ -28,3 +28,6 @@ DATABASE_URL=postgres://username:password@localhost:5432/yourdatabase
 npm run dev
 ```
 Compile the TypeScript code automatically and run the server, restarting it whenever you make changes.
+
+## 🏗️ Architecture
+![Architecture Diagram](./assets/architecture0.1.jpg)
