@@ -1,9 +1,6 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
-import { neon } from "@neondatabase/serverless";
-
-dotenv.config({override: true});
+import sql from "./config/db.js";
 
 const app = express();
 const port = 5000;
@@ -13,10 +10,14 @@ app.use(cors());
 app.use(express.json());
 
 
-const sql = neon(process.env.DATABASE_URL!);
+if (process.env.NODE_ENV === "development") { 
+  import("./migrations/migrate.js").then(() => { 
+      console.log("✅ Dev database ready"); 
+    }).catch(console.error); 
+}
 
 // Define routes
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.send('Hello from the server!');
 });
 
