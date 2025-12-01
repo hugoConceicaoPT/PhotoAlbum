@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import { stackClientApp } from "./scripts/stack";
 import { StackHandler, StackProvider, StackTheme } from "@stackframe/react";
+import Album from "./pages/Album";
 
 function HandlerRoutes() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/*" element={<HandlerRoutes />} />
           <Route path="/" element={<Home />} />
+          <Route path="/Albums" element={<Album />} />
         </Routes>
       </StackTheme>
     </StackProvider>

@@ -1,0 +1,241 @@
+:root {
+  font-family: 'DM Sans', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #FDF6EC !important;
+}
+
+.navbar {
+  font-family: 'DM Sans' !important;
+}
+
+.navbar-brand {
+  color: #283618 !important;
+  font-weight: 500 !important;
+}
+
+.nav-link {
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
+.btn-register {
+  background-color: #606C38 !important;
+  border-color: #606C38 !important;
+  color: #FDF6EC !important;
+  font-weight: 600 !important;
+}
+
+.right-rectangle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    bottom: 1rem;
+    width: 25vw;        /* change as needed */
+    background-color: #DDA15E;
+    display: flex;
+    justify-content: center;  /* center horizontally */
+    padding-top: 40px;        /* distance from the top */
+    z-index: 0;
+}
+
+.right-rectangle img {
+    position: absolute;     
+    object-fit: contain;
+    transform: scale(2);
+    right: 45%;
+    top: 10%;
+}
+
+.right-rectangle .swipe-wrapper {
+    position: absolute;
+    overflow: hidden;
+    top: 20%;
+    width: 100%;
+    height: 80%;
+}
+
+.right-rectangle .swipeDown {
+    position: absolute;     
+    right: 0%;
+    top: 75%;
+    transform: rotate(270deg);
+}
+
+.bi-arrow-down {
+  position: absolute;
+  top: 85%;
+  left: 46%;
+  z-index: 1;
+}
+
+.divTextSwipe {
+  position: fixed;
+  bottom: 30px; /* distance from bottom */
+  width: 130px;
+  height: 50px;
+  right: 10.5%;
+  text-align: center;
+}
+
+.textSwipe {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.home-text {
+  margin-top: 4rem;
+}
+
+.title-text {
+  font-size: 3.5rem !important;
+  color: #283618;
+  font-weight: bold;
+}
+
+.title-text::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #000000;
+  opacity: 57%;
+}
+
+.features-container {
+  position: fixed;       /* stays under the title */
+  left: 125px;           
+  top: 400px;            /* adjust to sit right below your title */
+}
+
+.feature {
+  width: 250px;
+}
+
+.feature-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+.albumBtn {
+  position: fixed;
+  bottom: 13rem;     /* distance from bottom */
+  left: 20%;
+  transform: translateX(-50%);
+  background-color: #606C38 !important;
+  border-color: #606C38 !important;
+  color: #FDF6EC !important;
+  font-weight: 600 !important;
+}
+
+.albumHeading {
+  color: #283618;
+}
+
+.addAlbum {
+  font-weight: 500;
+  color: #283618;
+  font-size: 1.2rem;
+}
+
+.mostRecents {
+  font-weight: 500;
+  color: #283618;
+  font-size: 1.2rem;
+}
+
+
+.divisorAlbum {     
+  height: 2px;             /* thickness */
+  background-color: black;
+  opacity: 70%;  /* color */
+}
+
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+
+  a:hover {
+    color: #747bff;
+  }
+
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+@media (min-width: 992px) {
+
+  /* lg breakpoint */
+  .navbar-collapse {
+    display: flex !important;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .navbar-nav.center-links {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .navbar-nav.right-links {
+    display: flex;
+    flex-direction: row;
+  }
+}
