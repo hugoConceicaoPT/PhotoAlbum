@@ -1,5 +1,5 @@
 import { Router, type Request, type Response } from "express";
-import { addAlbum, deleteAlbum, getAlbumsByUserId, updateAlbum } from "../models/album";
+import { addAlbum, deleteAlbum, getAlbumsByUserId, updateAlbum } from "../models/album.js";
 
 const router = Router();
 
@@ -37,10 +37,12 @@ router.get("/user/:userId", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/:id", async (req: Request<{ id: string }, {}, { name: string }>, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
+
+    if (!id) return res.status(400).json({ error: "Missing id" });
 
     if (!name) return res.status(400).json({ error: "Nothing to update" });
 

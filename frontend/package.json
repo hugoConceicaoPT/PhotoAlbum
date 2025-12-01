@@ -12,6 +12,7 @@
   "dependencies": {
     "@stackframe/react": "^2.8.48",
     "@stackframe/stack": "^2.8.48",
+    "bootstrap": "^5.3.8",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5"
