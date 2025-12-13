@@ -190,6 +190,21 @@ button:hover {
   font-size: 1.2rem;
 }
 
+.img-cell {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.img-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.img-cell:last-child img {
+    border-bottom-right-radius: 8px;
+}
 
 .divisorAlbum {     
   height: 2px;             /* thickness */

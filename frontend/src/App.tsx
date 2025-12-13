@@ -1,7 +1,7 @@
 // src/App.tsx
 import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
-import { stackClientApp } from "./scripts/stack";
+import { stackClientApp } from "./stack";
 import { StackHandler, StackProvider, StackTheme } from "@stackframe/react";
 import Album from "./pages/Album";
 
