@@ -1,21 +1,18 @@
 name: Frontend CI
 
 on:
-  push:
-    branches:
-      - feature/**
-    paths:
-      - "frontend/**"
-
   pull_request:
     branches:
       - dev
+      - main
     paths:
       - "frontend/**"
 
 jobs:
   frontend-ci:
     runs-on: ubuntu-latest
+
+    environment: ${{ github.ref_name == 'main' && 'production' || '' }}
 
     steps:
       - name: Checkout

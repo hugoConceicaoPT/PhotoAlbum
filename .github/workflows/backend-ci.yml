@@ -1,21 +1,18 @@
 name: Backend CI
 
 on:
-  push:
-    branches:
-      - feature/**
-    paths:
-      - "backend/**"
-
   pull_request:
     branches:
       - dev
+      - main
     paths:
       - "backend/**"
 
 jobs:
   backend-ci:
     runs-on: ubuntu-latest
+
+    environment: ${{ github.ref_name == 'main' && 'production' || '' }}
 
     steps:
       - name: Checkout
