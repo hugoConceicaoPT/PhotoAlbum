@@ -1,4 +1,4 @@
-import { defineConfig } from "eslint-define-config";
+import { defineConfig } from "eslint/config";
 
 export default defineConfig({
   root: true,
