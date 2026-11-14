@@ -20,7 +20,7 @@ export default function Navbar() {
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav center-links">
                             <li className="nav-item mx-2">
-                                <a className="nav-link" aria-current="page" href="#">Álbuns de Fotos</a>
+                                <a className="nav-link" aria-current="page" href="/Albums">Álbuns de Fotos</a>
                             </li>
                             <li className="nav-item mx-2">
                                 <a className="nav-link" href="#">Coleções</a>

@@ -49,7 +49,7 @@ export class WorkerAlbum {
         }
     }
     
-    public async getAlbumByUserId(user_id: number): Promise<IAlbum[]> {
+    public async getAlbunsByUserId(user_id: number): Promise<IAlbum[]> {
         const endpoint = `${config.serverAddress}/albums/user/${user_id}`;
         try {
             const response = await fetch(endpoint);

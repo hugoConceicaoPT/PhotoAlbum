@@ -53,7 +53,7 @@ export class WorkerCollection {
     }
 
     public async getCollectionsByUserId(user_id: number): Promise<ICollection[]> {
-        const endpoint = `${config.serverAddress}/collections/album/${user_id}`;
+        const endpoint = `${config.serverAddress}/collections/user/${user_id}`;
         try {
             const response = await fetch(endpoint);
             if (!response.ok) {
