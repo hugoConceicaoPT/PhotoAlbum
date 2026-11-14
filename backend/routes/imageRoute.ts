@@ -3,6 +3,7 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { addImage, deleteImage, getImageById, getImagesByCollectionId, type Image } from "../models/image.js";
 import { getCollectionById } from "../models/collection.js";
+import fs from "fs/promises";
 
 const router = Router();
 const upload = multer({ dest: "uploads/" }); // temporary local storage
@@ -18,7 +19,7 @@ cloudinary.config({
 router.get("/collection/:collectionId", async (req: Request, res: Response) => {
   try {
     const { collectionId } = req.params
-    if (!collectionId ) return res.status(400).json({ error: "Missing collectionId" });
+    if (!collectionId) return res.status(400).json({ error: "Missing collectionId" });
     const images = await getImagesByCollectionId(collectionId);
 
     const signedImages = images.map((img) => ({
@@ -29,8 +30,8 @@ router.get("/collection/:collectionId", async (req: Request, res: Response) => {
         expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour
       }),
     }));
-    
-    return res.json(images as Image[]);
+
+    return res.json(signedImages);
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch images for collection" });
@@ -61,18 +62,24 @@ router.post(
 
       // Upload each file sequentially (can also parallelize with Promise.all)
       for (const file of files) {
-        const uploadResult = await cloudinary.uploader.upload(file.path, {
-          folder: folderName,
-          type: "authenticated",
-        });
+        try {
+          const uploadResult = await cloudinary.uploader.upload(file.path, {
+            folder: folderName,
+            type: "authenticated",
+          });
 
-        const newImage = await addImage(
-          collectionId,
-          uploadResult.secure_url,
-          uploadResult.public_id
-        );
-        if(!newImage) return res.status(400).json({ error: "Problem inserting image on database" }); 
-        uploadedImages.push(newImage);
+
+          const newImage = await addImage(
+            collectionId,
+            uploadResult.secure_url,
+            uploadResult.public_id
+          );
+          if (!newImage) return res.status(400).json({ error: "Problem inserting image on database" });
+          uploadedImages.push(newImage);
+        } finally {
+          // garante limpeza mesmo se falhar
+          await fs.unlink(file.path).catch(() => { });
+        }
       }
 
       return res.status(201).json({
@@ -89,7 +96,7 @@ router.post(
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    if (!id) return res.status(400).json({ error: "Missing image id" }); 
+    if (!id) return res.status(400).json({ error: "Missing image id" });
 
     const image = await getImageById(id);
     if (!image) return res.status(404).json({ error: "Image not found" });
@@ -115,7 +122,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
 
 
     // Delete from DB
-    await deleteImage(id); 
+    await deleteImage(id);
 
     return res.json({ message: "✅ Image deleted successfully" });
   } catch (err) {
