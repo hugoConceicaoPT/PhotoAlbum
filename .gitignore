@@ -2,3 +2,39 @@
 .env
 dist/
 /backend/node_modules
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# --- Environment files: never commit real values; the example file stays tracked ---
+.env.*
+!.env.example
+
+# --- Local / machine-specific ---
+.claude/settings.local.json
+
+# --- Logs, caches and test artifacts ---
+*.log
+npm-debug.log*
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+blob-report/
+*.tsbuildinfo
+.vite/
+.eslintcache
+
+# --- Local databases and dev-only data ---
+*.sqlite
+*.sqlite3
+
+# --- OS and editor files ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# --- Local development reports (not for the shared repository) ---
+docs/end-of-day-report-2026-11-15.md

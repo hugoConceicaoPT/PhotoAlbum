@@ -34,9 +34,12 @@ export async function insertCollection(albumId: string, name: string, descriptio
   console.log(`✅ Collection '${name}' created in album ${albumId}`);
 }
 
-export async function getCollectionById(id: string) {
+/** Returns the collection only if its album belongs to userId. */
+export async function getCollectionById(id: string, userId: string) {
   const [collection] = (await sql`
-    SELECT * FROM Collection WHERE id = ${id};
+    SELECT c.* FROM Collection c
+    JOIN Album a ON c.album_id = a.id
+    WHERE c.id = ${id} AND a.user_id = ${userId};
   `) as Collection[];
 
   if (!collection) return null;
@@ -45,9 +48,11 @@ export async function getCollectionById(id: string) {
   return collection;
 }
 
-export async function getCollectionsByAlbumId(albumId: string) {
+export async function getCollectionsByAlbumId(albumId: string, userId: string) {
   const collections = await sql`
-    SELECT * FROM Collection WHERE album_id = ${albumId};
+    SELECT c.* FROM Collection c
+    JOIN Album a ON c.album_id = a.id
+    WHERE c.album_id = ${albumId} AND a.user_id = ${userId};
   ` as Collection[];
   console.log(`✅ Fetched collections for album ${albumId}`);
   return collections;
@@ -66,6 +71,7 @@ export async function getCollectionsByUserId(userId: string) {
 
 export async function updateCollection(
   id: string,
+  userId: string,
   fields: {
     name?: string;
     description?: string | null;
@@ -73,24 +79,34 @@ export async function updateCollection(
     endDate?: string | null;
   }
 ) {
+  // Per-field flags: undefined keeps the stored value, null clears it, any other value replaces it.
+  // (COALESCE(param, column) could not tell "clear" from "keep".) name is never nullable.
+  const hasName = fields.name !== undefined;
+  const hasDescription = fields.description !== undefined;
+  const hasBeginDate = fields.beginDate !== undefined;
+  const hasEndDate = fields.endDate !== undefined;
   const [updatedCollection] = (await sql`
     UPDATE Collection
     SET
-      name = COALESCE(${fields.name}, name),
-      description = COALESCE(${fields.description}, description),
-      begin_date = COALESCE(${fields.beginDate}, begin_date),
-      end_date = COALESCE(${fields.endDate}, end_date),
+      name = CASE WHEN ${hasName}::boolean THEN ${fields.name ?? null}::text ELSE name END,
+      description = CASE WHEN ${hasDescription}::boolean THEN ${fields.description ?? null}::text ELSE description END,
+      begin_date = CASE WHEN ${hasBeginDate}::boolean THEN ${fields.beginDate ?? null}::date ELSE begin_date END,
+      end_date = CASE WHEN ${hasEndDate}::boolean THEN ${fields.endDate ?? null}::date ELSE end_date END,
       updated_at = NOW()
     WHERE id = ${id}
+      AND album_id IN (SELECT id FROM Album WHERE user_id = ${userId})
     RETURNING *;
   `) as Collection[];
   console.log(`✅ Collection ${id} updated`);
   return updatedCollection;
 }
 
-export async function deleteCollection(id: string) {
-  await sql`
-    DELETE FROM Collection WHERE id = ${id};
+/** Deletes the collection only if its album belongs to userId. */
+export async function deleteCollection(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`
+    DELETE FROM Collection
+    WHERE id = ${id} AND album_id IN (SELECT id FROM Album WHERE user_id = ${userId})
+    RETURNING id;
   `;
-  console.log(`✅ Collection ${id} deleted`);
+  return rows.length > 0;
 }

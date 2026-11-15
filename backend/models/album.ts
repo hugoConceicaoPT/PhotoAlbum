@@ -37,18 +37,24 @@ export async function getAlbumsByUserId(userId: string) {
   return albums;
 }
 
-export async function updateAlbum(id: string, name: string) {
+export async function updateAlbum(id: string, name: string, userId: string) {
   const [updatedAlbum] = (await sql`
     UPDATE Album
     SET name = ${name}, updated_at = NOW()
-    WHERE id = ${id}
+    WHERE id = ${id} AND user_id = ${userId}
     RETURNING *;
   `) as Album[];
   console.log(`✅ Album ${id} updated`);
   return updatedAlbum;
 }
 
-export async function deleteAlbum(id: string) {
-  await sql`DELETE FROM Album WHERE id = ${id};`;
-  console.log(`✅ Album ${id} deleted`);
+/** Deletes the album only if owned by userId. Returns false when nothing matched. */
+export async function deleteAlbum(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`DELETE FROM Album WHERE id = ${id} AND user_id = ${userId} RETURNING id;`;
+  return rows.length > 0;
+}
+
+export async function isAlbumOwnedBy(id: string, userId: string): Promise<boolean> {
+  const rows = await sql`SELECT 1 FROM Album WHERE id = ${id} AND user_id = ${userId};`;
+  return rows.length > 0;
 }

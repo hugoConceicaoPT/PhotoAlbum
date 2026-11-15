@@ -1,43 +1,44 @@
-import express from 'express';
-import cors from 'cors';
-import sql from "./config/db.js";
-import albumRoutes from "./routes/albumRoute.js";
-import collectionRoutes from "./routes/collectionRoute.js";
-import imageRoutes from "./routes/imageRoute.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-const app = express();
-const port = 5000;
+import { createApp } from "./app.js";
+import { loadConfig } from "./config/env.js";
+import { createStackTokenVerifier } from "./lib/stackAuth.js";
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const config = loadConfig();
+const port = Number.parseInt(process.env.PORT ?? "5000", 10);
 
-if (process.env.NODE_ENV === "development") { 
-  import("./migrations/migrate.js").then(() => { 
-      console.log("✅ Dev database ready"); 
-    }).catch(console.error); 
+if (!config.stackProjectId) {
+  console.error("STACK_PROJECT_ID is not set; refusing to start without token verification.");
+  process.exit(1);
+}
+if (config.allowedOrigins.length === 0) {
+  console.warn("CORS_ALLOWED_ORIGINS is empty: browsers on other origins will be blocked.");
 }
 
-// Define routes
-app.get('/', async (req, res) => {
-  res.send('Hello from the server!');
+const verify = createStackTokenVerifier({ projectId: config.stackProjectId, apiUrl: config.stackApiUrl });
+const isDev = process.env.NODE_ENV === "development";
+
+const app = createApp(config, verify, (a) => {
+  if (!isDev) return;
+  // Diagnostic route: exposes the PostgreSQL version, so it exists in development only.
+  a.get("/db-version", async (_req, res) => {
+    try {
+      const { default: sql } = await import("./config/db.js");
+      const result = await sql`SELECT version()`;
+      res.status(200).send(`PostgreSQL version: ${result[0]?.version}`);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Database error");
+    }
+  });
 });
 
-app.get("/db-version", async (req, res) => {
-  try {
-    const result = await sql`SELECT version()`;
-    const version = result[0]?.version;
-    res.status(200).send(`PostgreSQL version: ${version}`);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Database error");
-  }
-});
-
-app.use("/albums", albumRoutes);         // /albums
-app.use("/collections", collectionRoutes); // /collections
-app.use("/images", imageRoutes);         // /images (upload, get, delete)
+if (isDev) {
+  import("./migrations/migrate.js").then(() => {
+    console.log("✅ Dev database ready");
+  }).catch(console.error);
+}
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

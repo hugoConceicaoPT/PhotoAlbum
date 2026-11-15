@@ -1,8 +1,9 @@
+import { apiFetch, ApiError } from "./lib/apiClient";
 import { config } from "./config";
 
 export interface IImage {
-  id: number;
-  collection_id: number;
+  id: string;
+  collection_id: string;
   image_url: string;
   public_id: string;
 }
@@ -13,14 +14,15 @@ export class WorkerImage {
     const endpoint = `${config.serverAddress}/images/collection/${collectionId}`;
 
     try {
-      const response = await fetch(endpoint);
+      const response = await apiFetch(endpoint);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new ApiError(response.status);
       }
 
       const images: IImage[] = await response.json();
       return images;
     } catch (error) {
+      if (error instanceof ApiError && error.status === 401) throw error;
       console.error("Failed to fetch images", error);
       throw new Error("Unable to fetch images");
     }
@@ -33,13 +35,13 @@ export class WorkerImage {
     files.forEach((file) => formData.append("images", file));
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new ApiError(response.status);
       }
 
       const result = await response.json();
@@ -54,12 +56,12 @@ export class WorkerImage {
     const endpoint = `${config.serverAddress}/images/${imageId}`;
 
     try {
-      const response = await fetch(endpoint, {
+      const response = await apiFetch(endpoint, {
         method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new ApiError(response.status);
       }
     } catch (error) {
       console.error("Failed to delete image", error);

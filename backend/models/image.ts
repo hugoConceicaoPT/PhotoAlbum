@@ -34,20 +34,26 @@ export async function addImage(collection_id: string, image_url: string, public_
 }
 
 // ---------------- GET IMAGES BY COLLECTION ----------------
-export async function getImagesByCollectionId(collection_id: string) {
+export async function getImagesByCollectionId(collection_id: string, userId: string) {
   const images = await sql`
-    SELECT * FROM Image WHERE collection_id = ${collection_id};
+    SELECT i.* FROM Image i
+    JOIN Collection c ON i.collection_id = c.id
+    JOIN Album a ON c.album_id = a.id
+    WHERE i.collection_id = ${collection_id} AND a.user_id = ${userId};
   ` as Image[];
   console.log(`✅ Fetched images for collection ${collection_id}`);
   return images;
 }
 
 // ---------------- GET IMAGE BY ID ----------------
-export async function getImageById(id: string) {
+export async function getImageById(id: string, userId: string) {
   const [image] = await sql`
-    SELECT * FROM Image WHERE id = ${id};
+    SELECT i.* FROM Image i
+    JOIN Collection c ON i.collection_id = c.id
+    JOIN Album a ON c.album_id = a.id
+    WHERE i.id = ${id} AND a.user_id = ${userId};
   ` as Image[];
-  console.log(`✅ Fetched images for collection ${id}`);
+  console.log(`✅ Fetched image ${id}`);
   return image;
 }
 

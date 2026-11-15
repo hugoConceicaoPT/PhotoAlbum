@@ -1,0 +1,104 @@
+/*
+ * Design tokens for PhotoMemory (source: "PhotoMemory – Redesign" screenshots in /assets).
+ *
+ * Provenance legend:
+ *   [sampled]    colour sampled from screenshot pixels (docs/design/figma-reference.md)
+ *   [by-eye]     estimated by looking at the screenshots; NOT verified
+ *   [unverified] no design data available; closest existing app value or a guess
+ * The Figma file defines no variables. Replace [by-eye]/[unverified] values once
+ * get_design_context is available for frame 2:2.
+ */
+:root {
+  /* Colours */
+  --pm-bg: #FBF6EC;               /* [sampled] page background */
+  --pm-surface: #FFFFFF;          /* [sampled] cards, inputs, tab bar */
+  --pm-surface-warm: #FFFDF8;     /* [sampled in "Ver álbum"; by-eye reuse for hero mock card] */
+  --pm-navy: #1F1B4D;             /* [sampled] primary, headings, filled buttons */
+  --pm-teal: #2DD4BF;             /* [sampled] accent, FAB, "Adicionar álbum" */
+  --pm-amber: #DF983B;            /* [sampled] hero panel (Login panel is #E39A3B: owner question) */
+  --pm-border: #E7DFCF;           /* [sampled] card edge, dividers */
+  /* Control border (inputs, search/sort, edit buttons, dashed tile, hamburger box). [sampled, owner decision]:
+     outermost pixel of the stroke is #8E8AA6, followed by #C6C4D2 which is #8E8AA6 at 50% on white, so the stroke
+     is a ~1.5 px line of #8E8AA6 (width ESTIMATED from that pixel pair). 3.31:1 on white, 3.08:1 on #FBF6EC. */
+  --pm-border-input: #8E8AA6;
+  --pm-border-input-inner: rgba(142, 138, 166, 0.5);  /* the 0.5 px remainder of the 1.5 px stroke */
+  --pm-stroke-input: 1px;         /* full-strength part; browsers snap CSS borders to whole device pixels (1.5px -> 1px at 1x) */
+  /* Second, half-strength device pixel reproduces the 1.5 px stroke at 1x and 2x: border + inset ring. */
+  --pm-ring-input: inset 0 0 0 1px var(--pm-border-input-inner);
+  --pm-tint-teal: #E6FAF6;        /* [sampled] */
+  --pm-tint-orange: #FFF1DC;      /* [sampled] */
+  --pm-tint-lavender: #ECEAFB;    /* [sampled] */
+  --pm-text-muted: #5B5877;       /* [unverified] subtitles, metadata */
+  --pm-eyebrow: #0F766E;          /* [unverified] green eyebrow label */
+  --pm-icon-teal: #0F766E;        /* [unverified] */
+  --pm-icon-orange: #B45309;      /* [unverified] */
+  --pm-icon-lavender: #1F1B4D;    /* [unverified] */
+  --pm-nav-underline: var(--pm-amber); /* [unverified] */
+  --pm-on-teal: var(--pm-navy);   /* [unverified] text on teal buttons */
+  --pm-link: var(--pm-eyebrow);   /* [by-eye] green links on Login/Registar (same green as the eyebrow) */
+  --pm-error: #B42318;            /* [engineer proposal, not in Figma] field/form errors; ~6.5:1 on white */
+  --pm-error-bg: #FEF3F2;         /* [engineer proposal, not in Figma] form error banner */
+
+  /* Typography (family kept from the existing app; match unconfirmed) */
+  --pm-font: 'DM Sans', system-ui, Avenir, Helvetica, Arial, sans-serif; /* [unverified] */
+  --pm-fs-eyebrow: 0.8125rem;     /* [by-eye] 13px */
+  --pm-fs-h1-hero: clamp(2.25rem, 1.2rem + 3.6vw, 3.75rem); /* [by-eye] 36 mobile to ~60 desktop */
+  --pm-fs-h1-page: clamp(2rem, 1.4rem + 1.8vw, 2.75rem);    /* [by-eye] */
+  --pm-fs-lead: 1.125rem;         /* [by-eye] */
+  --pm-fs-body: 1rem;             /* [by-eye] */
+  --pm-fs-small: 0.875rem;        /* [by-eye] */
+  --pm-fw-heading: 800;           /* [by-eye] DM Sans is loaded at 400/500/700 only: 800 renders as 700 */
+  --pm-lh-heading: 1.05;          /* [by-eye] */
+
+  /* Radii */
+  --pm-radius-pill: 999px;        /* [by-eye] */
+  --pm-radius-card: 16px;         /* [by-eye] */
+  --pm-radius-tile: 10px;         /* [by-eye] */
+  --pm-radius-panel: 28px;        /* [by-eye] hero panel */
+
+  /* Shadows */
+  --pm-shadow-card: 0 1px 2px rgba(31, 27, 77, 0.04);        /* [by-eye] */
+  --pm-shadow-mock: 0 18px 40px rgba(31, 27, 77, 0.22);       /* [by-eye] */
+
+  /* Spacing and layout */
+  --pm-gutter: 20px;              /* [by-eye] mobile side margin */
+  --pm-content-max: 1088px;       /* [by-eye] desktop content width at 1280 */
+  --pm-nav-max: 1168px;           /* [by-eye] desktop nav width at 1280 */
+  --pm-grid-gap: 24px;            /* [by-eye] */
+  --pm-grid-gap-mobile: 12px;     /* [by-eye] */
+  --pm-tabbar-h: 72px;            /* [from frame metadata: Tab bar 72 px] */
+
+  /* Login / Registar desktop geometry (1280 px frames, pixel-sampled): form column x=138, amber panel x=696..1256 */
+  --pm-auth-frame-max: 1280px;    /* [sampled] frame width the geometry is relative to */
+  --pm-auth-form-x: 138px;        /* [sampled] */
+  --pm-auth-panel-w: 560px;       /* [sampled] */
+  --pm-auth-panel-edge: 24px;     /* [sampled] gap between the panel and the right viewport edge */
+  --pm-footer-cols-w: 712px;      /* [sampled] Home footer columns span x=512..1224 at 1280 */
+
+  /* Minimum interactive target size (owner decision: nav links and "Mostrar", WCAG 2.5.5 / 2.5.8) */
+  --pm-target-min: 44px;
+
+  /* Home mobile hamburger box (sampled from "Mobile · Home": 48 x 48 box, white fill, navy icon) */
+  --pm-toggler-size: 48px;        /* [sampled] */
+  --pm-toggler-radius: 14px;      /* [ESTIMATED] from the corner pixels; 12-16 px fit */
+
+  /* Placeholder photo gradients (decorative; from the mock-up screenshots, by-eye) */
+  --pm-grad-sunset: linear-gradient(145deg, #F4A261 0%, #D04A6E 55%, #3F2E7A 100%);
+  --pm-grad-ocean: linear-gradient(145deg, #7DD3FC 0%, #0E7490 60%, #134E4A 100%);
+  --pm-grad-dusk: linear-gradient(145deg, #1E1B4B 0%, #6D28D9 60%, #F59E0B 100%);
+  --pm-grad-candy: linear-gradient(160deg, #FDE68A 0%, #F9A8D4 55%, #9D174D 100%);
+}
+
+/* Map tokens onto Bootstrap 5 so its components pick them up */
+:root {
+  --bs-body-bg: var(--pm-bg);
+  --bs-body-color: var(--pm-navy);
+  --bs-body-font-family: var(--pm-font);
+  --bs-primary: var(--pm-navy);
+  --bs-primary-rgb: 31, 27, 77;
+  --bs-border-color: var(--pm-border);
+  --bs-link-color: var(--pm-navy);
+  --bs-link-hover-color: var(--pm-navy);
+  --bs-link-color-rgb: 31, 27, 77;
+  --bs-link-hover-color-rgb: 31, 27, 77;
+}

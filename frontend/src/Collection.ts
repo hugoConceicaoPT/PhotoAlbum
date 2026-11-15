@@ -1,8 +1,9 @@
+import { apiFetch, ApiError } from "./lib/apiClient";
 import { config } from "./config";
 
 export interface ICollection {
-    id?: number;
-    album_id: number;
+    id?: string;
+    album_id: string;
     name: string;
     description?: string | null;
     beginDate?: string | null;
@@ -15,7 +16,7 @@ export class WorkerCollection {
         const endpoint = `${config.serverAddress}/collections`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -24,7 +25,7 @@ export class WorkerCollection {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const newCollection: ICollection = await response.json();
@@ -36,28 +37,29 @@ export class WorkerCollection {
         }
     }
 
-    public async getCollectionsByAlbumId(album_id: number): Promise<ICollection[]> {
+    public async getCollectionsByAlbumId(album_id: string | number): Promise<ICollection[]> {
         const endpoint = `${config.serverAddress}/collections/album/${album_id}`;
         try {
-            const response = await fetch(endpoint);
+            const response = await apiFetch(endpoint);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const collections: ICollection[] = await response.json();
             return collections;
         } catch (error) {
+            if (error instanceof ApiError && error.status === 401) throw error;
             console.error(`Failed to fetch Collections for Album: ${album_id}`, error);
             throw new Error("Unable to retrieve collections. Please try again later.");
         }
     }
 
-    public async getCollectionsByUserId(user_id: number): Promise<ICollection[]> {
+    public async getCollectionsByUserId(user_id: string): Promise<ICollection[]> {
         const endpoint = `${config.serverAddress}/collections/user/${user_id}`;
         try {
-            const response = await fetch(endpoint);
+            const response = await apiFetch(endpoint);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const collections: ICollection[] = await response.json();
@@ -68,12 +70,12 @@ export class WorkerCollection {
         }
     }
 
-    public async getCollection(id: number): Promise<ICollection> {
+    public async getCollection(id: string): Promise<ICollection> {
         const endpoint = `${config.serverAddress}/collections/${id}`;
         try {
-            const response = await fetch(endpoint);
+            const response = await apiFetch(endpoint);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const collection: ICollection = await response.json();
@@ -84,7 +86,7 @@ export class WorkerCollection {
         }
     }
 
-    public async updateCollection(id: number, fields: Record<string, string>): Promise<ICollection> {
+    public async updateCollection(id: string, fields: Record<string, string>): Promise<ICollection> {
         if (Object.keys(fields).length === 0) {
             throw new Error("Nothing to update");
         }
@@ -92,7 +94,7 @@ export class WorkerCollection {
         const endpoint = `${config.serverAddress}/collections/${id}`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -101,7 +103,7 @@ export class WorkerCollection {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const updatedCollection = await response.json();
@@ -113,16 +115,16 @@ export class WorkerCollection {
     }
 
 
-    public async deleteAlbum(id: number): Promise<void> {
+    public async deleteAlbum(id: string): Promise<void> {
         const endpoint = `${config.serverAddress}/albums/${id}`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "DELETE",
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const data = await response.json();
@@ -133,7 +135,7 @@ export class WorkerCollection {
         }
     }
 
-    public async deleteCollection(collectionId: number | string): Promise<void> {
+    public async deleteCollection(collectionId: string): Promise<void> {
         if (!collectionId) {
             throw new Error("Missing collectionId");
         }
@@ -141,12 +143,12 @@ export class WorkerCollection {
         const endpoint = `${config.serverAddress}/collections/${collectionId}`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "DELETE",
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             await response.json();

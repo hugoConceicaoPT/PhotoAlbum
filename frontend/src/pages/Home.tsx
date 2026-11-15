@@ -1,54 +1,115 @@
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar'  // adjust path if needed
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { stackClientApp } from "../stack";
+import { useCurrentUser } from "../auth/session";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import ResponsiveText from "../components/ResponsiveText";
+import { GridIcon, ImageIcon, MoveIcon } from "../components/icons";
+
+interface Feature {
+  title: string;
+  desktop: string;
+  mobile: string;
+  icon: ReactNode;
+  tone: "teal" | "orange" | "lavender";
+}
+
+// Copy differs between the desktop and mobile designs.
+const FEATURES: Feature[] = [
+  {
+    title: "Álbuns automáticos",
+    desktop: "Os teus álbuns são criados automaticamente com base nas coleções que adicionas.",
+    mobile: "Criados a partir das coleções que adicionas.",
+    icon: <GridIcon size={20} />,
+    tone: "teal",
+  },
+  {
+    title: "Arrastar & largar",
+    desktop: "Editar os teus álbuns é simples e intuitivo. Arrasta e larga fotos para mudar o layout.",
+    mobile: "Muda o layout das páginas com um toque.",
+    icon: <MoveIcon size={20} />,
+    tone: "orange",
+  },
+  {
+    title: "Folhear como um livro",
+    desktop: "Vê o teu álbum em página dupla e partilha-o com quem quiseres.",
+    mobile: "Desliza para virar a página e partilha.",
+    icon: <ImageIcon size={20} />,
+    tone: "lavender",
+  },
+];
+
 export default function Home() {
-  const navigate = useNavigate();
+  const user = useCurrentUser();
   return (
     <>
       <Navbar />
-      <div className='container-fluid home-text d-flex flex-column align-items-center'>
-        <div className='text-wrap position-fixed start-0' style={{ width: 594, marginLeft: 125 }}>
-          <p className='text-start title-text'>Organiza as tuas memórias com facilidade</p>
-        </div>
-        <div className="features-container d-flex gap-5 mt-5">
-          <div className="feature">
-            <svg className="text-gray-800 dark:text-white feature-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h14" />
-            </svg>
-            <h4 className="fw-bold mt-3">Álbuns Automáticos</h4>
-            <p className="text-muted small">
-              Os teus álbuns são criados automaticamente com base nas coleções que adicionas.
+      <main>
+        <section className="pm-wrap pm-hero" aria-labelledby="hero-title">
+          <div className="pm-hero-copy">
+            <p className="pm-eyebrow">Álbuns de fotos digitais</p>
+            <h1 id="hero-title" className="pm-hero-title">
+              Organiza as tuas memórias com facilidade
+            </h1>
+            <p className="pm-lead">
+              <ResponsiveText
+                desktop="Junta as tuas fotos em coleções e deixa o PhotoMemory transformá-las em álbuns bonitos, prontos a folhear."
+                mobile="Junta as tuas fotos em coleções e deixa o PhotoMemory criar álbuns prontos a folhear."
+              />
             </p>
-          </div>
-
-          <div className="feature">
-            <svg className="w-6 h-6 text-gray-800 dark:text-white feature-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.143 4H4.857A.857.857 0 0 0 4 4.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 10 9.143V4.857A.857.857 0 0 0 9.143 4Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286A.857.857 0 0 0 20 9.143V4.857A.857.857 0 0 0 19.143 4Zm-10 10H4.857a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286A.857.857 0 0 0 9.143 14Zm10 0h-4.286a.857.857 0 0 0-.857.857v4.286c0 .473.384.857.857.857h4.286a.857.857 0 0 0 .857-.857v-4.286a.857.857 0 0 0-.857-.857Z" />
-            </svg>
-
-            <h4 className="fw-bold mt-3">Arrastar & Largar</h4>
-            <p className="text-muted small">
-              Edita o teu álbum de forma simples e intuitiva. Arrasta e larga as fotos para mudar a ordem.
-            </p>
-          </div>
-        </div>
-        <button type="button" className="btn btn-primary btn-lg albumBtn rounded-pill px-4"  onClick={() => navigate("/albums")}>Crie o seu Álbum de Fotos</button>
-        <div className="right-rectangle">
-          <img className='img-fluid' src="/camera_polaroid-removebg-preview.png" alt="Side Decoration" />
-          <div className="swipe-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="#FFFFFF" className="bi bi-arrow-down" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1" />
-            </svg>
-            <svg className="swipeDown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" >
-              <path d="M21 12c0 2.86-2.72 6.62-15.94 6.97-1.13.03-2.06-.88-2.06-2V7.03c0-1.13.94-2.03 2.06-2C18.28 5.38 21 9.15 21 12Z" fill="#000000"></path>
-            </svg>
-            <div className='divTextSwipe'>
-              <p className='textSwipe'  style={{ cursor: "pointer" }} onClick={() => navigate("/albums")}>
-                Desliza para Baixo para Criar
-              </p>
+            <div className="pm-hero-actions">
+              <Link to="/Albums" className="pm-btn pm-btn-navy pm-btn-lg">
+                Cria o teu álbum de fotos
+              </Link>
+              {/* "Ver como funciona" has no defined target: scrolls to the features section. */}
+              <a href="#funcionalidades" className="pm-btn pm-btn-outline pm-btn-lg d-none d-lg-inline-flex">
+                Ver como funciona
+              </a>
+              {/* On mobile the header hides Entrar, so the design repeats it here. */}
+              {!user && (
+                <Link to={stackClientApp.urls.signIn} className="pm-btn pm-btn-outline pm-btn-lg d-lg-none">
+                  Entrar
+                </Link>
+              )}
             </div>
           </div>
-        </div>
-      </div>
+
+          <div className="pm-hero-visual" aria-hidden="true">
+            <div className="pm-hero-panel">
+              <div className="pm-mock">
+                <div className="pm-mock-thumbs">
+                  <span className="pm-grad-sunset" />
+                  <span className="pm-grad-ocean" />
+                  <span className="pm-grad-dusk" />
+                </div>
+                <div className="pm-mock-page">
+                  <span className="pm-grad-candy" />
+                  <p>Verão em Lisboa</p>
+                </div>
+              </div>
+              <span className="pm-mock-pill d-none d-lg-inline-block">Álbum criado automaticamente</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="funcionalidades" className="pm-wrap pm-features" aria-label="Funcionalidades">
+          {FEATURES.map((f) => (
+            <article key={f.title} className="pm-feature">
+              <span className={`pm-feature-icon is-${f.tone}`} aria-hidden="true">
+                {f.icon}
+              </span>
+              <div>
+                <h2 className="pm-feature-title">{f.title}</h2>
+                <p className="pm-feature-text">
+                  <ResponsiveText desktop={f.desktop} mobile={f.mobile} />
+                </p>
+              </div>
+            </article>
+          ))}
+        </section>
+      </main>
+      <Footer />
     </>
-  )
+  );
 }

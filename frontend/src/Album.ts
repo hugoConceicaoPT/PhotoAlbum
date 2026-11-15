@@ -1,27 +1,29 @@
+import { apiFetch, apiJson, ApiError } from "./lib/apiClient";
 import { config } from "./config";
 
 export interface IAlbum {
-    id?: number,
+    id?: string;
     name: string;
     user_id: string;
+    created_at?: string;
 }
 
 export class WorkerAlbum {
 
-    public async addAlbum(name: string, user_id: string): Promise<IAlbum> {
+    public async addAlbum(name: string): Promise<IAlbum> {
         const endpoint = `${config.serverAddress}/albums`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ name, user_id }),
+                body: JSON.stringify({ name }), // owner comes from the token (backend ignores any user_id)
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const newAlbum: IAlbum = await response.json();
@@ -33,12 +35,12 @@ export class WorkerAlbum {
         }
     }
 
-    public async getAlbum(id: number): Promise<IAlbum> {
+    public async getAlbum(id: string): Promise<IAlbum> {
         const endpoint = `${config.serverAddress}/albums/${id}`;
         try {
-            const response = await fetch(endpoint);
+            const response = await apiFetch(endpoint);
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             const album: IAlbum = await response.json();
@@ -49,27 +51,23 @@ export class WorkerAlbum {
         }
     }
     
-    public async getAlbunsByUserId(user_id: number): Promise<IAlbum[]> {
-        const endpoint = `${config.serverAddress}/albums/user/${user_id}`;
+    /** Albums of the authenticated user (GET /albums; the owner comes from the token, no user id is sent). */
+    public async getMyAlbums(): Promise<IAlbum[]> {
         try {
-            const response = await fetch(endpoint);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const album: IAlbum[] = await response.json();
-            return album;
+            return await apiJson<IAlbum[]>(`${config.serverAddress}/albums`);
         } catch (error) {
-            console.error(`Failed to fetch Album for user: ${user_id}`, error);
-            throw new Error("Unable to retrieve album. Please try again later.");
+            // Keep the status for 401 so the UI can send the user back to Login.
+            if (error instanceof ApiError && error.status === 401) throw error;
+            console.error("Failed to fetch albums", error);
+            throw new Error("Unable to retrieve albums. Please try again later.");
         }
     }
     
-    public async updateAlbum(album_id: number, name: string): Promise<IAlbum> {
+    public async updateAlbum(album_id: string, name: string): Promise<IAlbum> {
         const endpoint = `${config.serverAddress}/albums/${album_id}`;
 
         try {
-        const response = await fetch(endpoint, {
+        const response = await apiFetch(endpoint, {
             method: "PUT",
             headers: {
             "Content-Type": "application/json",
@@ -78,7 +76,7 @@ export class WorkerAlbum {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new ApiError(response.status);
         }
 
         const updatedAlbum: IAlbum = await response.json();
@@ -89,16 +87,16 @@ export class WorkerAlbum {
         }
     }
 
-    public async deleteAlbum(id: number): Promise<void> {
+    public async deleteAlbum(id: string): Promise<void> {
         const endpoint = `${config.serverAddress}/albums/${id}`;
 
         try {
-            const response = await fetch(endpoint, {
+            const response = await apiFetch(endpoint, {
                 method: "DELETE",
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new ApiError(response.status);
             }
 
             await response.json();
